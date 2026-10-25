@@ -1,7 +1,7 @@
 apply plugin: 'java'
 apply plugin: 'maven-publish'
 
-group = 'su.skycraft.build'
+group = System.getenv('GROUP') ?: 'su.skycraft.build'
 version = System.getenv('VERSION') ?: 'v1.1.9'
 
 def jarFile = file('JarSplitterGradle-v1.1.9.jar')
@@ -20,7 +20,7 @@ publishing {
     publications {
         mavenJava(MavenPublication) {
             groupId = project.group
-            artifactId = 'JarSplitterGradle'
+            artifactId = System.getenv('ARTIFACT') ?: 'JarSplitterGradle'
             version = project.version
             artifact jarFile
 
