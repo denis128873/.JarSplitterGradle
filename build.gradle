@@ -1,15 +1,10 @@
 apply plugin: 'java'
 apply plugin: 'maven-publish'
 
-group = 'com.github.denis128873'
+group = 'com.github.LuxinfineTeam'
 version = 'v1.1.9'
 
-// Published SkyCraft fork of the existing plugin binary.
-// The repository does not contain plugin sources, so do not pretend to recompile it.
-def jarFile = file("JarSplitterGradle-${version}.jar")
-if (!jarFile.isFile()) {
-    throw new GradleException("Missing prebuilt JarSplitter plugin: ${jarFile}")
-}
+def jarFile = file('JarSplitterGradle-' + version + '.jar')
 
 //Выключаем пересборку jar
 tasks.withType(Jar).configureEach {
@@ -23,9 +18,6 @@ artifacts {
 publishing {
     publications {
         mavenJava(MavenPublication) {
-            groupId = project.group
-            artifactId = 'JarSplitterGradle'
-            version = project.version
             artifact jarFile
 
             //Бинарник без депендов внутри, потому указываем их тут, чтобы gradle скачал их сам
