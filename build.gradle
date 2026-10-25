@@ -2,9 +2,9 @@ apply plugin: 'java'
 apply plugin: 'maven-publish'
 
 group = 'su.skycraft.build'
-version = 'v1.1.9'
+version = System.getenv('VERSION') ?: 'v1.1.9'
 
-def jarFile = file('JarSplitterGradle-' + version + '.jar')
+def jarFile = file('JarSplitterGradle-v1.1.9.jar')
 if (!jarFile.isFile()) throw new GradleException("Missing plugin JAR: ${jarFile}")
 
 //Выключаем пересборку jar
