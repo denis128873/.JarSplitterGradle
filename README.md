@@ -1,38 +1,42 @@
-# JarSplitter-Gradle
+# SkyCraft JarSplitterGradle (binary fork)
 
-**JarSplitter-Gradle** - аналог [`Cutter`](https://forum.mcmodding.ru/resources/vyrezalka-2.198/) от JustAGod с полной поддержкой распила на клиент, сервер и дев билды.
+Этот репозиторий публикует готовый **JarSplitterGradle-v1.1.9.jar** как Maven-артефакт SkyCraft.
 
-# Пример подключения в `build.gradle`
-```groovy
-buildscript {
-    repositories {
-        ...
-        maven { url 'https://jitpack.io' }
-    }
-    dependencies {
-        ...
-        classpath "com.github.LuxinfineTeam:JarSplitterGradle:plugin-SNAPSHOT"
-    }
-}
+> В репозитории нет Java/Groovy-исходников самого плагина. Изменение `build.gradle` меняет упаковку и координаты публикации, **но не логику** разделения на CLIENT/SERVER.
 
-apply plugin: 'team.luxinfine.jarsplitter'
+## Сборка / локальная публикация
 
-repositories {
-    maven { url 'https://jitpack.io' }
-}
+Используется Gradle 8.14.3 (см. `gradle/wrapper/gradle-wrapper.properties`). В репозитории не хранится `gradle-wrapper.jar`; для команды `./gradlew` требуется восстановить wrapper либо использовать установленный Gradle.
 
-dependencies {
-    //Для 1.7.10 forge
-    implementation 'com.github.LuxinfineTeam:JarSplitterGradle:api-1.7.10-SNAPSHOT'
-    //Для 1.12.2 forge
-    //implementation 'com.github.LuxinfineTeam:JarSplitterGradle:api-1.12.2-SNAPSHOT'
-    //Для 1.21.1 neoforge
-    //implementation 'com.github.LuxinfineTeam:JarSplitterGradle:api-1.21.1-neo-SNAPSHOT'
-}
+```powershell
+gradle publishToMavenLocal
 ```
 
-# Плагин предоставит Gradle таски:
-- `buildClient` - сборка клиентской версии Jar
-- `buildServer` - сборка серверной версии Jar
-- `buildDev` - сборка DEV версии Jar. По сути, это сборка мода БЕЗ распила с деобфускацией майнкрафт маппингов. Да, можно получить такой jar и вручную, но таск чисто для удобства
-- `buildAll` - сборка всех 3 версий Jar
+Публикуются координаты:
+```text
+com.github.denis128873:JarSplitterGradle:v1.1.9
+```
+
+Для этой локальной публикации в потребляющем проекте можно добавить `mavenLocal()` в `buildscript.repositories` и зависимость на эти координаты, после чего применить `team.luxinfine.jarsplitter`. Совместимость с версией MultiJavaForgePlugin и публикацию JitPack необходимо проверять отдельно.
+
+## Разделение сторон
+
+В существующем бинарном плагине заявлены задачи:
+
+- `buildClient` — клиентские классы и общие зависимости.
+- `buildServer` — серверные классы и общие зависимости.
+- `buildDev` — несекционированная dev-сборка.
+- `buildAll` — все три варианта.
+
+Для SKC-CLR должны получаться два самостоятельных артефакта:
+
+```text
+SKC-CLR-1.7.10-10.2-client.jar
+SKC-CLR-1.7.10-10.2-server.jar
+```
+
+Проверяйте содержимое обоих JAR через `jar tf`; простое переименование `-j8.jar` не разделяет классы.
+
+## Зависимости плагина
+
+Maven POM перечисляет ASM Tree 9.10.1 и fastutil 8.5.16 как runtime-зависимости. Другие совместимые API-зависимости (включая аннотации `@Environment`) необходимо объявлять в самих модах отдельно.
