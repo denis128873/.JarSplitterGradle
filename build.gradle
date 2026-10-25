@@ -1,0 +1,43 @@
+apply plugin: 'java'
+apply plugin: 'maven-publish'
+
+group = 'com.github.LuxinfineTeam'
+version = 'v1.1.9'
+
+def jarFile = file('JarSplitterGradle-' + version + '.jar')
+
+//Выключаем пересборку jar
+tasks.withType(Jar).configureEach {
+    enabled = false
+}
+
+artifacts {
+    archives jarFile
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            artifact jarFile
+
+            //Бинарник без депендов внутри, потому указываем их тут, чтобы gradle скачал их сам
+            pom {
+                withXml {
+                    def dependenciesNode = asNode().appendNode('dependencies')
+
+                    def asmTreeDep = dependenciesNode.appendNode('dependency')
+                    asmTreeDep.appendNode('groupId', 'org.ow2.asm')
+                    asmTreeDep.appendNode('artifactId', 'asm-tree')
+                    asmTreeDep.appendNode('version', '9.10.1')
+                    asmTreeDep.appendNode('scope', 'runtime')
+
+                    def fastutilDep = dependenciesNode.appendNode('dependency')
+                    fastutilDep.appendNode('groupId', 'it.unimi.dsi')
+                    fastutilDep.appendNode('artifactId', 'fastutil')
+                    fastutilDep.appendNode('version', '8.5.16')
+                    fastutilDep.appendNode('scope', 'runtime')
+                }
+            }
+        }
+    }
+}
